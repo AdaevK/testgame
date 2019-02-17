@@ -15,12 +15,12 @@ module.exports = (container) => {
       try {
         const { input } = req.body;
 
-        const { result } = GamesService.check({
+        const result = GamesService.check({
           number: req.session.gameNumber,
           input,
         });
 
-        res.json({ result });
+        res.json(result);
       } catch (error) {
         next(error);
       }

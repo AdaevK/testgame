@@ -18,7 +18,7 @@ function isNotFailNumber(number) {
 }
 
 function isValid(value) {
-  return (typeof value === 'string' && value.length === 4);
+  return (typeof value === 'string' && value.length === lengthNumber);
 }
 
 function getExistingCount(number, array) {
@@ -36,7 +36,7 @@ module.exports = () => class GameService {
       number = generate(generatePattern, lengthNumber);
     } while (isNotFailNumber(number));
 
-    return '1213'; // number;
+    return number;
   }
 
   static check({ number, input }) {
@@ -60,8 +60,7 @@ module.exports = () => class GameService {
       }
     });
 
-    const result = 'B'.repeat(inTheirPlacesCount)
-      + 'K'.repeat(existingCount);
+    const result = 'B'.repeat(inTheirPlacesCount) + 'K'.repeat(existingCount);
 
     return {
       ...(result === 'BBBB' ? { state: 'win' } : undefined),
