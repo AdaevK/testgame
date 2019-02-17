@@ -2,12 +2,14 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
+const session = require('express-session');
 const Container = require('./libs/container');
 const logger = require('./libs/logger');
 const { NotFound } = require('./libs/errors');
 const assets = require('./libs/assets');
 const errorHandler = require('./libs/error_handler');
 
+const services = require('./services');
 const controllers = require('./controllers');
 
 const routes = require('./routes');
@@ -49,6 +51,7 @@ module.exports = class Application {
     this.container.registerValue('env', env);
     this.container.registerValue('logger', logger({ env }));
 
+    services(this.container);
     controllers(this.container);
   }
 
@@ -69,6 +72,12 @@ module.exports = class Application {
 
     server.use(morgan('combined', { stream: this.logger.stream }));
     server.use('/', express.static(this.publicDir));
+    server.use(session({
+      name: process.env.SESSION_NAME,
+      secret: process.env.SESSION_SECRET,
+      maxAge: 3600,
+      resave: false,
+    }));
     server.use(assets({
       env: this.env,
       prefex: this.assetsUrl,
