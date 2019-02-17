@@ -18,7 +18,11 @@ function isNotFailNumber(number) {
 }
 
 function isValid(value) {
-  return (typeof value === 'string' && value.length === lengthNumber);
+  return (
+    typeof value === 'string'
+    && value.trim().length === lengthNumber
+    && Number.isFinite(Number(value))
+  );
 }
 
 function getExistingCount(number, array) {

@@ -12,6 +12,7 @@ class Game extends React.Component {
       input: '',
       invalid: false,
       disabled: false,
+      disabledBtn: true,
       message: '',
     };
 
@@ -23,7 +24,7 @@ class Game extends React.Component {
     e.preventDefault();
 
     const { input } = this.state;
-    this.setState({ disabled: true });
+    this.setState({ disabled: true, disabledBtn: true });
 
     api.game.check({ input })
       .then(({ data }) => {
@@ -56,8 +57,8 @@ class Game extends React.Component {
 
     const attempt = {
       number: attempts.length + 1,
+      result: result || '',
       input,
-      result,
     };
 
     this.setState({
@@ -67,12 +68,17 @@ class Game extends React.Component {
   }
 
   handleInputChange(event) {
-    this.setState({ input: event.target.value, invalid: false });
+    const value = event.target.value.trim();
+    const { length } = value;
+
+    if (length < 5 && Number.isFinite(Number(value))) {
+      this.setState({ input: value, invalid: false, disabledBtn: length !== 4 });
+    }
   }
 
   render() {
     const {
-      attempts, input, invalid, disabled, message,
+      attempts, input, invalid, disabled, disabledBtn, message,
     } = this.state;
 
     const messageElement = message.length ? (
@@ -91,7 +97,7 @@ class Game extends React.Component {
             <div className="input-group game__input">
               <input className={`form-control${invalid ? ' is-invalid' : ''}`} value={input} onChange={this.handleInputChange} disabled={disabled} />
               <div className="input-group-append">
-                <button type="submit" className="btn btn-success" disabled={disabled}>Проверить</button>
+                <button type="submit" className="btn btn-success" disabled={disabled || disabledBtn}>Проверить</button>
               </div>
             </div>
             <small>Введите 4-х значное число.</small>

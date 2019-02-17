@@ -18,7 +18,7 @@ class GameAttempt extends React.Component {
     /* eslint-disable react/jsx-one-expression-per-line */
     return (
       <li className="attempt">
-        {number}: {input} - {(result || '').padEnd(4, '_')}
+        {number}: {input} - {result.padEnd(4, '_')}
       </li>
     );
     /* eslint-enable */
