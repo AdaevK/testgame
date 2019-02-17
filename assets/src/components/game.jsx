@@ -23,10 +23,13 @@ class Game extends React.Component {
 
     api.game.check({ input })
       .then(({ data }) => {
+        const { state, result } = data;
+
         const attempt = {
+          win: state === 'win',
           number: attempts.length + 1,
           input,
-          result: data.result,
+          result,
         };
 
         this.setState({

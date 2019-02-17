@@ -13,9 +13,14 @@ module.exports = (container) => {
     },
     async check(req, res, next) {
       try {
-        const input = req.body;
+        const { input } = req.body;
 
-        res.json({ result: 'BBK' });
+        const { result } = GamesService.check({
+          number: req.session.gameNumber,
+          input,
+        });
+
+        res.json({ result });
       } catch (error) {
         next(error);
       }

@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const Container = require('./libs/container');
 const logger = require('./libs/logger');
 const { NotFound } = require('./libs/errors');
@@ -72,6 +73,7 @@ module.exports = class Application {
 
     server.use(morgan('combined', { stream: this.logger.stream }));
     server.use('/', express.static(this.publicDir));
+    server.use(bodyParser.json());
     server.use(session({
       name: process.env.SESSION_NAME,
       secret: process.env.SESSION_SECRET,
