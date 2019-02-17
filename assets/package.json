@@ -29,6 +29,7 @@
     "node-sass": "^4.11.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
+    "prop-types": "^15.7.2",
     "sass-loader": "^7.1.0",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.29.4",
