@@ -15,18 +15,20 @@ class GameAttempt extends React.Component {
   render() {
     const { number, input, result } = this.state;
 
+    /* eslint-disable react/jsx-one-expression-per-line */
     return (
       <li className="attempt">
         {number}: {input} - {result}
       </li>
     );
+    /* eslint-enable */
   }
 }
 
 GameAttempt.propTypes = {
-  number: PropTypes.number,
-  input: PropTypes.string,
-  result: PropTypes.string,
-}
+  number: PropTypes.number.isRequired,
+  input: PropTypes.string.isRequired,
+  result: PropTypes.string.isRequired,
+};
 
 export default GameAttempt;

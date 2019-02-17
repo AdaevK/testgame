@@ -1,13 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import GameAttempt from './game_attempt';
+
+import api from '../api';
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      id: props.id,
       attempts: [],
       input: '',
     };
@@ -18,16 +18,25 @@ class Game extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    const attempt = {
-      number: this.state.attempts.length + 1,
-      input: this.state.input,
-      result: 'BK',
-    };
 
-    this.setState({
-      attempts: [attempt, ...this.state.attempts],
-      input: '',
-    });
+    const { input, attempts } = this.state;
+
+    api.game.check({ input })
+      .then(({ data }) => {
+        const attempt = {
+          number: attempts.length + 1,
+          input,
+          result: data.result,
+        };
+
+        this.setState({
+          attempts: [attempt, ...attempts],
+          input: '',
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   handleInputChange(event) {
@@ -42,7 +51,7 @@ class Game extends React.Component {
         <div className="col-12 mb-1">
           <form onSubmit={this.handleSubmit}>
             <div className="input-group game__input">
-              <input className="form-control" value={input} onChange={this.handleInputChange}/>
+              <input className="form-control" value={input} onChange={this.handleInputChange} />
               <div className="input-group-append">
                 <button type="submit" className="btn btn-success">Проверить</button>
               </div>
@@ -54,19 +63,13 @@ class Game extends React.Component {
           <h4>Предыдущие попытки</h4>
           <ul className="game__attempts attempts mt-1">
             {
-              attempts.map((attempt) => {
-                return <GameAttempt key={attempt.number} {...attempt} />
-              })
+              attempts.map(attempt => <GameAttempt key={attempt.number} {...attempt} />)
             }
           </ul>
         </div>
       </div>
-    )
+    );
   }
-}
-
-Game.propTypes = {
-  id: PropTypes.number,
 }
 
 export default Game;

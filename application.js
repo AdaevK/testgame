@@ -2,10 +2,15 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
-const logger = require('./logger');
+const Container = require('./libs/container');
+const logger = require('./libs/logger');
+const { NotFound } = require('./libs/errors');
+const assets = require('./libs/assets');
+const errorHandler = require('./libs/error_handler');
+
+const controllers = require('./controllers');
+
 const routes = require('./routes');
-const { NotFound } = require('./errors');
-const assets = require('./assets');
 
 const rootPath = process.cwd();
 const env = process.env.NODE_ENV
@@ -31,11 +36,6 @@ function onError(error) {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
-function errorHandler(err, req, res, next) {
-  res.status(err.status || 500);
-  res.json({ message: err.message || err.name });
-}
 module.exports = class Application {
   constructor() {
     this.port = process.env.PORT
@@ -45,18 +45,19 @@ module.exports = class Application {
     this.viewsDir = path.join(rootPath, '/views');
     this.assetsUrl = 'assets';
 
-    this.container = {
-      env,
-      logger: logger({ env }),
-    };
+    this.container = new Container();
+    this.container.registerValue('env', env);
+    this.container.registerValue('logger', logger({ env }));
+
+    controllers(this.container);
   }
 
   get logger() {
-    return this.container.logger;
+    return this.container.get('logger');
   }
 
   get env() {
-    return this.container.env;
+    return this.container.get('env');
   }
 
   async start() {
@@ -83,7 +84,7 @@ module.exports = class Application {
     }
 
     const router = express.Router();
-    routes(router);
+    routes(router, this.container);
     server.use(router);
     server.use(() => { throw new NotFound('route not found'); });
     server.use(errorHandler);

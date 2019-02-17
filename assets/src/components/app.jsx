@@ -1,6 +1,8 @@
 import React from 'react';
 import Game from './game';
 
+import api from '../api';
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -8,20 +10,29 @@ export default class App extends React.Component {
     this.state = {
       game: null,
       disabled: false,
-    }
+    };
 
     this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick(e) {
     e.preventDefault();
-    if(!this.state.disabled) {
-      this.setState({ disabled: false });
+    const { disabled } = this.state;
 
-      this.setState({
-        disabled: false,
-        game: { id: 1 },
-      });
+    if (!disabled) {
+      this.setState({ disabled: false, game: null });
+
+      api.game.new()
+        .then(() => {
+          this.setState({
+            disabled: false,
+            game: {},
+          });
+        })
+        .catch((err) => {
+          this.setState({ disabled: false, game: null });
+          console.log(err);
+        });
     }
   }
 
@@ -33,7 +44,7 @@ export default class App extends React.Component {
       <div className="container text-center">
         <div className="row">
           <div className="col-12">
-            <h1>Игра "Угадай число"</h1>
+            <h1>Игра &quot;Угадай число&quot;</h1>
           </div>
         </div>
         <div className="row">
@@ -45,6 +56,6 @@ export default class App extends React.Component {
         </div>
         {gameElement}
       </div>
-    )
+    );
   }
 }
