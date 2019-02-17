@@ -22,6 +22,7 @@ module.exports = {
   },
   resolve: {
     modules: [__dirname, 'node_modules'],
+    extensions: ['*', '.js', '.jsx'],
   },
   optimization: {
     namedModules: true,
@@ -46,6 +47,15 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ],
       },
     ],
   },
