@@ -1,10 +1,13 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const logger = require('./logger');
 const routes = require('./routes');
 const { NotFound } = require('./errors');
+const assets = require('./assets');
 
+const rootPath = process.cwd();
 const env = process.env.NODE_ENV
   ? process.env.NODE_ENV
   : 'development';
@@ -33,13 +36,14 @@ function errorHandler(err, req, res, next) {
   res.status(err.status || 500);
   res.json({ message: err.message || err.name });
 }
-
 module.exports = class Application {
   constructor() {
     this.port = process.env.PORT
       ? process.env.PORT
       : 3000;
-    this.publicDir = '/public';
+    this.publicDir = path.join(rootPath, '/public');
+    this.viewsDir = path.join(rootPath, '/views');
+    this.assetsUrl = 'assets';
 
     this.container = {
       env,
@@ -51,12 +55,32 @@ module.exports = class Application {
     return this.container.logger;
   }
 
+  get env() {
+    return this.container.env;
+  }
+
   async start() {
     const server = express();
     server.disable('x-powered-by');
+    server.set('views', this.viewsDir);
+    server.set('view engine', 'pug');
+    server.set('trust proxy', 1);
 
     server.use(morgan('combined', { stream: this.logger.stream }));
     server.use('/', express.static(this.publicDir));
+    server.use(assets({
+      env: this.env,
+      prefex: this.assetsUrl,
+      manifestPath: this.publicDir,
+    }));
+
+    if (['development', 'test'].includes(this.env)) {
+      // eslint-disable-next-line import/no-extraneous-dependencies, global-require
+      const proxy = require('http-proxy-middleware');
+      server.use('/', proxy('/assets', {
+        target: 'http://localhost:8080',
+      }));
+    }
 
     const router = express.Router();
     routes(router);

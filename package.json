@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Test game",
   "scripts": {
-    "start": "nodemon --inspect ./bin/server",
+    "start": "nodemon --inspect --ignore assets --ignore public ./bin/server",
     "production": "NODE_ENV=production node ./bin/server"
   },
   "author": "Kirill Adaev",
@@ -12,6 +12,7 @@
     "eslint": "^5.14.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
+    "http-proxy-middleware": "^0.19.1",
     "nodemon": "^1.18.10"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "express": "^4.16.4",
     "morgan": "^1.9.1",
     "nanoid": "^2.0.1",
+    "pug": "^2.0.3",
     "winston": "^3.2.1"
   }
 }
