@@ -57,7 +57,7 @@ class Game extends React.Component {
 
     const attempt = {
       number: attempts.length + 1,
-      result: result || '',
+      result,
       input,
     };
 
