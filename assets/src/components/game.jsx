@@ -47,7 +47,7 @@ class Game extends React.Component {
         }
       })
       .catch((err) => {
-        this.setState({ disabled: false });
+        this.setState({ disabled: false, disabledBtn: false });
         console.error(err);
       });
   }

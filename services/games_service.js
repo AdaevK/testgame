@@ -25,11 +25,35 @@ function isValid(value) {
   );
 }
 
-function getExistingCount(number, array) {
-  const regexp = new RegExp(array.join('|'), 'g');
-  const result = number.match(regexp);
-  if (result === null) return 0;
-  return result.length;
+class CheckGame {
+  constructor(number, input) {
+    this._number = number;
+    this._input = input.split('');
+  }
+
+  call() {
+    return this.calculateResult().join('');
+  }
+
+  calculateResult() {
+    const existing = this.getObjectExisting();
+    return this._input.map((digit, index) => {
+      if (existing[digit]) {
+        return this._number[index] === digit ? 'B' : 'K';
+      }
+      return '_';
+    });
+  }
+
+  getObjectExisting() {
+    const regexp = new RegExp(this._input.join('|'), 'g');
+    const match = this._number.match(regexp);
+    if (match === null) return {};
+    return match.reduce((acc, n) => {
+      acc[n] = true;
+      return acc;
+    }, {});
+  }
 }
 
 module.exports = () => class GameService {
@@ -52,19 +76,8 @@ module.exports = () => class GameService {
       return { state: 'invalid', error: 'Введите 4-х значное число' };
     }
 
-    const inputArray = input.split('');
-    let existingCount = getExistingCount(number, inputArray);
-    if (!existingCount) return {};
-
-    let inTheirPlacesCount = 0;
-    inputArray.forEach((digit, index) => {
-      if (number[index] === digit) {
-        inTheirPlacesCount += 1;
-        existingCount -= 1;
-      }
-    });
-
-    const result = 'B'.repeat(inTheirPlacesCount) + 'K'.repeat(existingCount);
+    const checkGame = new CheckGame(number, input);
+    const result = checkGame.call();
 
     return {
       ...(result === 'BBBB' ? { state: 'win' } : undefined),
